@@ -11,6 +11,8 @@
 import sys
 from optparse import OptionParser
 import re
+import time
+import random
 
 from scrape import *
 
@@ -26,6 +28,9 @@ def forumfrompost(row):
     except ScrapeError:
         return 'Must login to get forum! (%s)' % s.url
 
+def randsleep(n):
+    time.sleep(random.random() * n)
+
 def main():
     """main function for standalone usage"""
     usage = "usage: %prog [options] > stats 2> log"
@@ -36,6 +41,8 @@ def main():
             help='Do not log in and scrape anonymously')
     parser.add_option('-n', '--page-number', default=1, type='int')
     parser.add_option('-d', '--num-pages-to-parse', default=1, type='int')
+    parser.add_option('-r', '--row-sleep-time', default=2, type='int')
+    parser.add_option('-t', '--page-sleep-time', default=5, type='int')
 
     (options, args) = parser.parse_args()
 
@@ -74,8 +81,10 @@ def main():
                 duration = 'NA'
 
             print('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row)))
+            randsleep(options.row_sleep_time)
 
         sys.stderr.write('Finished parsing #%d\n' % pagenum)
+        randsleep(options.page_sleep_time)
 
 if __name__ == '__main__':
     sys.exit(main())
