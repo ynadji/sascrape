@@ -2,10 +2,7 @@
 #
 # Scrape SA.
 #
-# TODO:
-# * make login work
-# * parse forum name from post
-# * find and follow "next" button
+# Author: Yacin Nadji <yacin@gatech.edu>
 #
 
 import sys
@@ -52,7 +49,7 @@ def main():
 
     duration_regex = re.compile('\d+ (day|year|month|week|hour)s?', re.IGNORECASE)
 
-    # do stuff
+    # login if we aren't running as a guest
     if not options.guest:
         params = {'username': options.username if options.username else raw_input('username: '),
                  'password': options.password if options.password else getpass('password: '),
