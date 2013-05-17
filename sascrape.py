@@ -28,13 +28,14 @@ def forumfrompost(row):
 
 def main():
     """main function for standalone usage"""
-    usage = "usage: %prog [options] > stats 2> error.log"
+    usage = "usage: %prog [options] > stats 2> log"
     parser = OptionParser(usage=usage)
     parser.add_option('-u', '--username', default='')
     parser.add_option('-p', '--password', default='')
     parser.add_option('-g', '--guest', default=False, action='store_true',
             help='Do not log in and scrape anonymously')
     parser.add_option('-n', '--page-number', default=1, type='int')
+    parser.add_option('-d', '--num-pages-to-parse', default=1, type='int')
 
     (options, args) = parser.parse_args()
 
@@ -54,22 +55,27 @@ def main():
         login = s.go('http://forums.somethingawful.com/account.php?action=loginform')
         userpage = s.submit(login.first('form', class_='login_form'), paramdict=params)
 
-    lepers = s.go('http://forums.somethingawful.com/banlist.php?pagenumber=%d'
-            % options.page_number)
+    for pagenum in range(options.page_number, options.page_number + options.num_pages_to_parse):
+        lepers = s.go('http://forums.somethingawful.com/banlist.php?pagenumber=%d'
+                % pagenum)
 
-    # always skip the first row (just header)
-    for row in lepers.first('table', class_='standard full').all('tr')[1:]:
+        sys.stderr.write('Begin parsing #%d\n' % pagenum)
 
-        bantype, date, username, reason, requestedby, approvedby = \
-                [x.text for x in row.all('td')]
+        # always skip the first row (just header)
+        for row in lepers.first('table', class_='standard full').all('tr')[1:]:
 
-        try:
-            duration = re.search(duration_regex, reason).group(0)
-        except AttributeError:
-            sys.stderr.write('No duration! "%s"\n' % reason)
-            duration = 'NA'
+            bantype, date, username, reason, requestedby, approvedby = \
+                    [x.text for x in row.all('td')]
 
-        print('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row)))
+            try:
+                duration = re.search(duration_regex, reason).group(0)
+            except AttributeError:
+                sys.stderr.write('No duration! "%s"\n' % reason)
+                duration = 'NA'
+
+            print('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row)))
+
+        sys.stderr.write('Finished parsing #%d\n' % pagenum)
 
 if __name__ == '__main__':
     sys.exit(main())
