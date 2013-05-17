@@ -13,6 +13,9 @@ import random
 
 from scrape import *
 
+sys.path.append('wulib')
+from wulib import fuckunicode
+
 def forumfrompost(row):
     """Given a row from the Leper's Colony return string representing the forums
     and subforums for the given thread."""
@@ -78,10 +81,10 @@ def main():
             try:
                 duration = re.search(duration_regex, reason).group(0)
             except AttributeError:
-                sys.stderr.write('No duration! "%s"\n' % reason)
+                sys.stderr.write('No duration! "%s"\n' % fuckunicode(reason))
                 duration = 'NA'
 
-            print('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row)))
+            print(fuckunicode('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row))))
             randsleep(options.row_sleep_time)
 
         sys.stderr.write('Finished parsing #%d\n' % pagenum)
