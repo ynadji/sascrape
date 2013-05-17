@@ -36,10 +36,14 @@ def main():
     parser.add_option('-p', '--password', default='')
     parser.add_option('-g', '--guest', default=False, action='store_true',
             help='Do not log in and scrape anonymously')
-    parser.add_option('-n', '--page-number', default=1, type='int')
-    parser.add_option('-d', '--num-pages-to-parse', default=1, type='int')
-    parser.add_option('-r', '--row-sleep-time', default=2, type='int')
-    parser.add_option('-t', '--page-sleep-time', default=5, type='int')
+    parser.add_option('-n', '--page-number', default=1, type='int',
+            help='Starting page number [default: %default]')
+    parser.add_option('-d', '--num-pages-to-parse', default=1, type='int',
+            help='Number of pages to parse [default: %default]')
+    parser.add_option('-r', '--row-sleep-time', default=2, type='int',
+            help='Sleep time between parsing LC rows [default: %default]')
+    parser.add_option('-t', '--page-sleep-time', default=5, type='int',
+            help='Sleep time between subsequent LC pages [default: %default]')
 
     (options, args) = parser.parse_args()
 
