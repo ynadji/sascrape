@@ -46,11 +46,13 @@ def main():
 
     # do stuff
     if not options.guest:
-        creds = {'username': options.username if options.username else raw_input('username: '),
-                 'password': options.password if options.password else getpass('password: ')}
+        params = {'username': options.username if options.username else raw_input('username: '),
+                 'password': options.password if options.password else getpass('password: '),
+                 'action': 'login',
+                 'next': '/'}
 
         login = s.go('http://forums.somethingawful.com/account.php?action=loginform')
-        userpage = s.submit(login.first('form', class_='login_form'), paramdict=creds)
+        userpage = s.submit(login.first('form', class_='login_form'), paramdict=params)
 
     lepers = s.go('http://forums.somethingawful.com/banlist.php?pagenumber=%d'
             % options.page_number)
