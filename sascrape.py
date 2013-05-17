@@ -14,12 +14,21 @@ import re
 
 from scrape import *
 
-def forumfrompost(r):
-    pass
+def forumfrompost(row):
+    """Given a row from the Leper's Colony return string representing the forums
+    and subforums for the given thread."""
+    try:
+        thread_anchor = row.first('td').first('a')
+        thread = s.follow(thread_anchor.content, row)
+        breadcrumb_anchors = thread.first('div', class_='breadcrumbs').all('a')
+        s.back()
+        return ' > '.join([x.text for x in breadcrumb_anchors])
+    except ScrapeError:
+        return 'Must login to get forum! (%s)' % s.url
 
 def main():
     """main function for standalone usage"""
-    usage = "usage: %prog [options] > stats"
+    usage = "usage: %prog [options] > stats 2> error.log"
     parser = OptionParser(usage=usage)
     parser.add_option('-u', '--username', default='')
     parser.add_option('-p', '--password', default='')
@@ -49,7 +58,6 @@ def main():
     # always skip the first row (just header)
     for row in lepers.first('table', class_='standard full').all('tr')[1:]:
 
-        thread_anchor = row.first('td').first('a')
         bantype, date, username, reason, requestedby, approvedby = \
                 [x.text for x in row.all('td')]
 
@@ -59,7 +67,7 @@ def main():
             sys.stderr.write('No duration! "%s"\n' % reason)
             duration = 'NA'
 
-        print('%s\t%s\t%s\t%s' % (username, bantype, duration, thread_anchor['href']))
+        print('%s\t%s\t%s\t%s' % (username, bantype, duration, forumfrompost(row)))
 
 if __name__ == '__main__':
     sys.exit(main())
