@@ -14,6 +14,9 @@ import re
 
 from scrape import *
 
+def forumfrompost(r):
+    pass
+
 def main():
     """main function for standalone usage"""
     usage = "usage: %prog [options] > stats"
