@@ -1,1 +1,7 @@
-See ./sascrape.py --help for usage
+= sascrape =
+
+$ git clone git://github.com/ynadji/sascrape.git
+$ cd sascrape
+$ git submodule init
+$ git submodule update
+$ ./sascrape.py --help
